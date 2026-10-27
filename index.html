@@ -1,1222 +1,1202 @@
-<!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKJC Mark Six Advanced Probability & Optimizer Suite</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        hkjcGold: '#EAB308',
-                        hkjcGreen: '#059669',
-                    }
+<script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Outfit', 'sans-serif'],
+                    mono: ['JetBrains Mono', 'monospace'],
+                },
+                colors: {
+                    hkjcGold: '#EAB308',
+                    hkjcGreen: '#059669',
                 }
             }
         }
-    </script>
-    <style>
-        .ball-red {
-            background: radial-gradient(circle at 35% 30%, #f87171, #ef4444 40%, #991b1b);
-            box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(239, 68, 68, 0.35);
-        }
-        .ball-blue {
-            background: radial-gradient(circle at 35% 30%, #60a5fa, #3b82f6 40%, #1e40af);
-            box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(59, 130, 246, 0.35);
-        }
-        .ball-green {
-            background: radial-gradient(circle at 35% 30%, #34d399, #10b981 40%, #065f46);
-            box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(16, 185, 129, 0.35);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        @keyframes rollIn {
-            0% { transform: translateY(-30px) rotate(-180deg) scale(0.5); opacity: 0; }
-            80% { transform: translateY(4px) rotate(10deg) scale(1.05); }
-            100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-        }
-        .animate-roll {
-            animation: rollIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-    </style>
-</head>
-<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-slate-950">
+    }
+</script>
+<style>
+    .ball-red {
+        background: radial-gradient(circle at 35% 30%, #f87171, #ef4444 40%, #991b1b);
+        box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(239, 68, 68, 0.35);
+    }
+    .ball-blue {
+        background: radial-gradient(circle at 35% 30%, #60a5fa, #3b82f6 40%, #1e40af);
+        box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(59, 130, 246, 0.35);
+    }
+    .ball-green {
+        background: radial-gradient(circle at 35% 30%, #34d399, #10b981 40%, #065f46);
+        box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(16, 185, 129, 0.35);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+    }
+    @keyframes rollIn {
+        0% { transform: translateY(-30px) rotate(-180deg) scale(0.5); opacity: 0; }
+        80% { transform: translateY(4px) rotate(10deg) scale(1.05); }
+        100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    }
+    .animate-roll {
+        animation: rollIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+</style>
 
-    <!-- Header Navigation -->
-    <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                
-                <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-emerald-600 to-blue-600 flex items-center justify-center shadow-lg shadow-amber-500/10">
-                        <i class="fa-solid fa-brain text-slate-950 text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h1 class="text-base font-extrabold text-white tracking-wide">MARK SIX <span class="text-amber-400 font-mono text-xs">PROBABILITY SUITE</span></h1>
-                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">HKJC V3.0 AI Model</span>
-                        </div>
-                        <p class="text-[11px] text-slate-400">Multi-Criteria Optimization & Statistical Validation Engine</p>
-                    </div>
+
+<!-- Header Navigation -->
+<header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-emerald-600 to-blue-600 flex items-center justify-center shadow-lg shadow-amber-500/10">
+                    <i class="fa-solid fa-brain text-slate-950 text-xl"></i>
                 </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base font-extrabold text-white tracking-wide">MARK SIX <span class="text-amber-400 font-mono text-xs">PROBABILITY SUITE</span></h1>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">HKJC V3.0 AI Model</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Multi-Criteria Optimization & Statistical Validation Engine</p>
+                </div>
+            </div>
 
-                <!-- Navigation Tabs -->
-                <div class="flex items-center space-x-2">
-                    <nav class="flex space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                        <button id="nav-gen" onclick="switchTab('gen')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 shadow transition">
-                            <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Generator
-                        </button>
-                        <button id="nav-validator" onclick="switchTab('validator')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-                            <i class="fa-solid fa-shield-halved mr-1.5"></i>Validator
-                        </button>
-                        <button id="nav-grid" onclick="switchTab('grid')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-                            <i class="fa-solid fa-fire text-amber-400 mr-1.5"></i>Heatmap Grid
-                        </button>
-                        <button id="nav-sim" onclick="switchTab('sim')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-                            <i class="fa-solid fa-microchip mr-1.5"></i>Simulator
-                        </button>
-                        <button id="nav-stats" onclick="switchTab('stats')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-                            <i class="fa-solid fa-chart-column mr-1.5"></i>Analytics
-                        </button>
-                    </nav>
-
-                    <button onclick="openScraperModal()" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700 transition">
-                        <i class="fa-solid fa-sliders text-amber-400"></i>
-                        <span>Model Tuning</span>
+            <!-- Navigation Tabs -->
+            <div class="flex items-center space-x-2">
+                <nav class="flex space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    <button id="nav-gen" onclick="switchTab('gen')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 shadow transition">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Generator
                     </button>
-                </div>
+                    <button id="nav-validator" onclick="switchTab('validator')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-shield-halved mr-1.5"></i>Validator
+                    </button>
+                    <button id="nav-grid" onclick="switchTab('grid')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-fire text-amber-400 mr-1.5"></i>Heatmap Grid
+                    </button>
+                    <button id="nav-sim" onclick="switchTab('sim')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-microchip mr-1.5"></i>Simulator
+                    </button>
+                    <button id="nav-stats" onclick="switchTab('stats')" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+                        <i class="fa-solid fa-chart-column mr-1.5"></i>Analytics
+                    </button>
+                </nav>
+
+                <button onclick="openScraperModal()" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700 transition">
+                    <i class="fa-solid fa-sliders text-amber-400"></i>
+                    <span>Model Tuning</span>
+                </button>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+<!-- Main Container -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- Top Indicator Bar -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-hourglass-half"></i>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-[10px] text-slate-400 font-medium truncate">Top Overdue (Poisson)</div>
-                    <div class="text-xs font-bold text-slate-100 flex items-center gap-1 mt-0.5" id="stat-top-overdue">-</div>
-                </div>
+    <!-- Top Indicator Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-hourglass-half"></i>
             </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-bolt"></i>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-[10px] text-slate-400 font-medium truncate">Top Pair Co-Occurrence</div>
-                    <div class="text-xs font-bold text-slate-100 mt-0.5" id="stat-top-pair">10 & 22 (14x)</div>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-scale-balanced"></i>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-[10px] text-slate-400 font-medium truncate">Ideal Sum Range</div>
-                    <div class="text-xs font-bold text-amber-400 mt-0.5">120 – 180 (76%)</div>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-dna"></i>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-[10px] text-slate-400 font-medium truncate">Decade Ratio Optimum</div>
-                    <div class="text-xs font-bold text-slate-100 mt-0.5">4-Decade Spread</div>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3 col-span-2 md:col-span-1">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                <div class="min-w-0">
-                    <div class="text-[10px] text-slate-400 font-medium truncate">Model Win Index</div>
-                    <div class="text-xs font-bold text-emerald-400 mt-0.5" id="stat-model-score">94.8 / 100</div>
-                </div>
+            <div class="min-w-0">
+                <div class="text-[10px] text-slate-400 font-medium truncate">Top Overdue (Poisson)</div>
+                <div class="text-xs font-bold text-slate-100 flex items-center gap-1 mt-0.5" id="stat-top-overdue">-</div>
             </div>
         </div>
 
-        <!-- TAB 1: GENERATOR ENGINE -->
-        <section id="tab-content-gen" class="space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Generator Controls Left Column (5 Cols) -->
-                <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-5 shadow-xl">
-                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Statistical Engine Settings
-                        </h2>
-                        <span class="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">High Probability</span>
-                    </div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="min-w-0">
+                <div class="text-[10px] text-slate-400 font-medium truncate">Top Pair Co-Occurrence</div>
+                <div class="text-xs font-bold text-slate-100 mt-0.5" id="stat-top-pair">10 & 22 (14x)</div>
+            </div>
+        </div>
 
-                    <!-- Dynamic Strategy Selector -->
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-300">Optimization Strategy</label>
-                        <select id="gen-strategy" onchange="updateStrategyDesc()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <option value="hybrid" selected>⚡ Hybrid Probability Maxima (Weighted Composite)</option>
-                            <option value="goldensum">🌟 Golden Ratio Sum (120-180) & Decade Spread</option>
-                            <option value="pairs">🤝 Companion Pair Optimizer (Co-Occurrence Boost)</option>
-                            <option value="overdue">⌛ Poisson Overdue Reversion (High Lapse Focus)</option>
-                            <option value="hot">🔥 High Frequency & Hot Streak Momentum</option>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="min-w-0">
+                <div class="text-[10px] text-slate-400 font-medium truncate">Ideal Sum Range</div>
+                <div class="text-xs font-bold text-amber-400 mt-0.5">120 – 180 (76%)</div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-dna"></i>
+            </div>
+            <div class="min-w-0">
+                <div class="text-[10px] text-slate-400 font-medium truncate">Decade Ratio Optimum</div>
+                <div class="text-xs font-bold text-slate-100 mt-0.5">4-Decade Spread</div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center space-x-3 col-span-2 md:col-span-1">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="min-w-0">
+                <div class="text-[10px] text-slate-400 font-medium truncate">Model Win Index</div>
+                <div class="text-xs font-bold text-emerald-400 mt-0.5" id="stat-model-score">94.8 / 100</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 1: GENERATOR ENGINE -->
+    <section id="tab-content-gen" class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Generator Controls Left Column (5 Cols) -->
+            <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-5 shadow-xl">
+                <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Statistical Engine Settings
+                    </h2>
+                    <span class="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">High Probability</span>
+                </div>
+
+                <!-- Dynamic Strategy Selector -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-300">Optimization Strategy</label>
+                    <select id="gen-strategy" onchange="updateStrategyDesc()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="hybrid" selected>⚡ Hybrid Probability Maxima (Weighted Composite)</option>
+                        <option value="goldensum">🌟 Golden Ratio Sum (120-180) & Decade Spread</option>
+                        <option value="pairs">🤝 Companion Pair Optimizer (Co-Occurrence Boost)</option>
+                        <option value="overdue">⌛ Poisson Overdue Reversion (High Lapse Focus)</option>
+                        <option value="hot">🔥 High Frequency & Hot Streak Momentum</option>
+                    </select>
+                    <p id="strategy-desc" class="text-[11px] text-slate-400 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+                        Blends lapse Poisson expectation, pair co-occurrence, and sum boundaries to maximize statistical odds.
+                    </p>
+                </div>
+
+                <!-- Ticket Format & System Selection -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Ticket Entry System</label>
+                        <select id="gen-entry-type" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="single" selected>Standard Single (6 Balls)</option>
+                            <option value="system7">System 7 Entry (7 Balls)</option>
+                            <option value="system8">System 8 Entry (8 Balls)</option>
                         </select>
-                        <p id="strategy-desc" class="text-[11px] text-slate-400 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
-                            Blends lapse Poisson expectation, pair co-occurrence, and sum boundaries to maximize statistical odds.
-                        </p>
                     </div>
-
-                    <!-- Ticket Format & System Selection -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Ticket Entry System</label>
-                            <select id="gen-entry-type" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                <option value="single" selected>Standard Single (6 Balls)</option>
-                                <option value="system7">System 7 Entry (7 Balls)</option>
-                                <option value="system8">System 8 Entry (8 Balls)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Lines Count</label>
-                            <select id="gen-line-count" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                <option value="1">1 Line</option>
-                                <option value="3">3 Lines</option>
-                                <option value="5" selected>5 Lines Ticket</option>
-                                <option value="10">10 Lines Ticket</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Hard Constraints / Filters -->
-                    <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-3">
-                        <span class="text-xs font-semibold text-slate-300 block">Strict Combination Filters</span>
-                        
-                        <div class="grid grid-cols-2 gap-2 text-[11px]">
-                            <label class="flex items-center space-x-2 text-slate-400">
-                                <input type="checkbox" id="filter-sum" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
-                                <span>Sum Range 120-180</span>
-                            </label>
-                            <label class="flex items-center space-x-2 text-slate-400">
-                                <input type="checkbox" id="filter-oddeven" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
-                                <span>Odd/Even Ratio (3:3, 4:2)</span>
-                            </label>
-                            <label class="flex items-center space-x-2 text-slate-400">
-                                <input type="checkbox" id="filter-decade" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
-                                <span>≥ 3 Decade Spread</span>
-                            </label>
-                            <label class="flex items-center space-x-2 text-slate-400">
-                                <input type="checkbox" id="filter-color" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
-                                <span>Balanced Colors</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Interactive Lock/Exclusion Chip Box -->
-                    <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-300 font-medium">Locks & Exclusions</span>
-                            <button onclick="switchTab('grid')" class="text-[10px] text-amber-400 hover:underline">Manage on Heatmap</button>
-                        </div>
-                        <div class="flex justify-between items-center text-xs text-slate-400">
-                            <span>Locked (<span id="count-locked" class="text-amber-400 font-bold">0</span>):</span>
-                            <div id="locked-chips" class="flex flex-wrap gap-1 max-w-[150px] justify-end">
-                                <span class="text-[10px] italic text-slate-600">None</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center text-xs text-slate-400">
-                            <span>Excluded (<span id="count-excluded" class="text-red-400 font-bold">0</span>):</span>
-                            <div id="excluded-chips" class="flex flex-wrap gap-1 max-w-[150px] justify-end">
-                                <span class="text-[10px] italic text-slate-600">None</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Generate Button -->
-                    <button onclick="generateOptimizedTickets()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-500/20 transition transform active:scale-[0.99] flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-dice text-lg"></i>
-                        <span>GENERATE OPTIMIZED TICKET</span>
-                    </button>
-                </div>
-
-                <!-- Generated Output Right Column (7 Cols) -->
-                <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 flex flex-col shadow-xl">
-                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-ticket text-emerald-400"></i> Optimized Ticket Output
-                        </h2>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="exportTicketsJSON()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition">
-                                <i class="fa-solid fa-file-code mr-1"></i>JSON
-                            </button>
-                            <button onclick="copyGeneratedLines()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition">
-                                <i class="fa-regular fa-copy mr-1"></i>Copy Lines
-                            </button>
-                            <button onclick="clearGeneratedLines()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 text-xs rounded-lg transition">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Output Area -->
-                    <div id="tickets-container" class="flex-1 py-4 space-y-3.5 overflow-y-auto custom-scrollbar max-h-[520px]">
-                        <div class="h-72 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-800 rounded-2xl">
-                            <div class="w-12 h-12 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center text-xl mb-3">
-                                <i class="fa-solid fa-brain"></i>
-                            </div>
-                            <h3 class="text-sm font-semibold text-slate-300">Statistical Engine Ready</h3>
-                            <p class="text-xs text-slate-500 max-w-xs mt-1">Select an optimization strategy and click "Generate Optimized Ticket" to calculate probability scores.</p>
-                        </div>
-                    </div>
-
-                    <!-- Footer Legend -->
-                    <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
-                        <div class="flex items-center space-x-3">
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Red</span>
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Blue</span>
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Green</span>
-                        </div>
-                        <div class="text-amber-400 font-mono"><i class="fa-solid fa-bullseye mr-1"></i>Targeting 120-180 Sum Bounds</div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- TAB 2: TICKET VALIDATOR & PROBABILITY SCORE TOOL -->
-        <section id="tab-content-validator" class="hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Input Box -->
-                <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
-                    <div class="border-b border-slate-800 pb-3">
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved text-amber-400"></i> Combination Validator & Scorer
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-1">Test any 6 numbers to evaluate win probability score, sum bounds, and decade spread.</p>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-300">Select or Enter 6 Numbers (1 to 49)</label>
-                        <div id="validator-balls-input" class="grid grid-cols-6 gap-2 bg-slate-950 p-3 rounded-2xl border border-slate-800">
-                            <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N1">
-                            <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N2">
-                            <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N3">
-                            <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N4">
-                            <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N5">
-                            <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N6">
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button onclick="validateTicketInput()" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow">
-                            <i class="fa-solid fa-calculator mr-1.5"></i>Calculate Score
-                        </button>
-                        <button onclick="fillRandomValidatorInput()" class="px-3.5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">
-                            <i class="fa-solid fa-shuffle"></i>
-                        </button>
-                    </div>
-
-                    <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs text-slate-400">
-                        <span class="font-semibold text-slate-200 block">Evaluation Criteria:</span>
-                        <ul class="space-y-1 list-disc list-inside text-[11px]">
-                            <li><strong>Sum Index:</strong> Highest score if sum is between 120 and 180.</li>
-                            <li><strong>Decade Spread:</strong> Favors combinations across 3 to 5 decade groups.</li>
-                            <li><strong>Odd/Even Ratio:</strong> 3:3 or 4:2 ratio gets 100% sub-score.</li>
-                            <li><strong>Companion Pair Hit:</strong> Checks pair co-occurrence strength.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Validation Analysis Results -->
-                <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5 flex flex-col justify-between">
                     <div>
-                        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-                            <h2 class="text-base font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-chart-pie text-emerald-400"></i> Statistical Index Breakdown
-                            </h2>
-                            <span id="validator-score-badge" class="text-sm font-extrabold px-3 py-1 rounded-xl bg-slate-800 text-slate-400 border border-slate-700">
-                                Score: -- / 100
-                            </span>
-                        </div>
-
-                        <!-- Ticket Balls Display -->
-                        <div id="validator-balls-display" class="flex items-center justify-center space-x-3 my-4 bg-slate-950 p-4 rounded-2xl border border-slate-800 min-h-[70px]">
-                            <span class="text-xs text-slate-500 italic">Enter numbers to analyze</span>
-                        </div>
-
-                        <!-- Breakdown Radar Grid -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
-                                <div class="text-[10px] text-slate-400">Sum Bounds</div>
-                                <div id="val-sum-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
-                                <div id="val-sum-score" class="text-[10px] font-semibold text-amber-400">0%</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
-                                <div class="text-[10px] text-slate-400">Odd / Even</div>
-                                <div id="val-oddeven-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
-                                <div id="val-oddeven-score" class="text-[10px] font-semibold text-emerald-400">0%</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
-                                <div class="text-[10px] text-slate-400">Decade Spread</div>
-                                <div id="val-decade-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
-                                <div id="val-decade-score" class="text-[10px] font-semibold text-blue-400">0%</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
-                                <div class="text-[10px] text-slate-400">Color Balance</div>
-                                <div id="val-color-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
-                                <div id="val-color-score" class="text-[10px] font-semibold text-purple-400">0%</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- AI Verdict Box -->
-                    <div id="validator-verdict" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs text-slate-400 leading-relaxed">
-                        <strong class="text-slate-200 block mb-1">Model Verdict:</strong>
-                        Input 6 numbers above to calculate statistical probability score.
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Lines Count</label>
+                        <select id="gen-line-count" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="1">1 Line</option>
+                            <option value="3">3 Lines</option>
+                            <option value="5" selected>5 Lines Ticket</option>
+                            <option value="10">10 Lines Ticket</option>
+                        </select>
                     </div>
                 </div>
 
-            </div>
-        </section>
-
-        <!-- TAB 3: HEATMAP GRID & PROBABILITY WEIGHTS -->
-        <section id="tab-content-grid" class="hidden space-y-4">
-            <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                    <div>
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-fire text-amber-400"></i> Probability Heatmap & Matrix
-                        </h2>
-                        <p class="text-xs text-slate-400">Color intensity reflects calculated win expectation probability. Click to Lock/Exclude.</p>
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <button onclick="clearAllGridSelections()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
-                            <i class="fa-solid fa-rotate-left mr-1.5"></i>Reset Locks & Excludes
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Mode Controls & Color Scale -->
-                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
-                    <div class="flex items-center space-x-4">
-                        <span class="font-semibold text-slate-300">Click Mode:</span>
-                        <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="grid-mode" value="lock" checked class="text-amber-500 focus:ring-amber-500">
-                            <span class="text-amber-400 font-medium"><i class="fa-solid fa-lock text-xs mr-1"></i>Lock</span>
+                <!-- Hard Constraints / Filters -->
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                    <span class="text-xs font-semibold text-slate-300 block">Strict Combination Filters</span>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <label class="flex items-center space-x-2 text-slate-400">
+                            <input type="checkbox" id="filter-sum" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
+                            <span>Sum Range 120-180</span>
                         </label>
-                        <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="grid-mode" value="exclude" class="text-red-500 focus:ring-red-500">
-                            <span class="text-red-400 font-medium"><i class="fa-solid fa-ban text-xs mr-1"></i>Exclude</span>
+                        <label class="flex items-center space-x-2 text-slate-400">
+                            <input type="checkbox" id="filter-oddeven" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
+                            <span>Odd/Even Ratio (3:3, 4:2)</span>
+                        </label>
+                        <label class="flex items-center space-x-2 text-slate-400">
+                            <input type="checkbox" id="filter-decade" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
+                            <span>≥ 3 Decade Spread</span>
+                        </label>
+                        <label class="flex items-center space-x-2 text-slate-400">
+                            <input type="checkbox" id="filter-color" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-500">
+                            <span>Balanced Colors</span>
                         </label>
                     </div>
-
-                    <div class="flex items-center space-x-3 text-[11px] text-slate-400">
-                        <span>Heatmap Scale:</span>
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-500"></span> High Exp.</span>
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-500/60"></span> Med Exp.</span>
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-800"></span> Low Exp.</span>
-                    </div>
                 </div>
 
-                <!-- Matrix Grid -->
-                <div id="ball-matrix" class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-10 lg:grid-cols-14 gap-3 pt-2">
-                    <!-- Populated dynamically via JS -->
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: MONTE CARLO SIMULATOR -->
-        <section id="tab-content-sim" class="hidden space-y-6">
-            <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                    <div>
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-microchip text-amber-400"></i> Monte Carlo Strategy Backtest Simulator
-                        </h2>
-                        <p class="text-xs text-slate-400">Run up to 10,000 simulated Mark Six draws to measure strategy hit rates.</p>
+                <!-- Interactive Lock/Exclusion Chip Box -->
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-300 font-medium">Locks & Exclusions</span>
+                        <button onclick="switchTab('grid')" class="text-[10px] text-amber-400 hover:underline">Manage on Heatmap</button>
                     </div>
-
-                    <div class="flex items-center space-x-2">
-                        <select id="sim-draw-count" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200">
-                            <option value="1000">1,000 Draws</option>
-                            <option value="5000">5,000 Draws</option>
-                            <option value="10000" selected>10,000 Draws</option>
-                        </select>
-                        <button onclick="runMonteCarloSimulation()" id="btn-run-sim" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-extrabold text-xs rounded-xl shadow transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-play"></i>
-                            <span>Run Backtest</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Simulation Stats Summary Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
-                        <div class="text-xs text-slate-400">3-Match Win Rate</div>
-                        <div id="sim-match3" class="text-lg font-extrabold text-amber-400 mt-1">-- %</div>
-                        <div class="text-[10px] text-slate-500">Prize Level 7 Equivalent</div>
-                    </div>
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
-                        <div class="text-xs text-slate-400">4-Match Win Rate</div>
-                        <div id="sim-match4" class="text-lg font-extrabold text-emerald-400 mt-1">-- %</div>
-                        <div class="text-[10px] text-slate-500">Priating Level 5 Equivalent</div>
-                    </div>
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
-                        <div class="text-xs text-slate-400">5-Match Win Rate</div>
-                        <div id="sim-match5" class="text-lg font-extrabold text-blue-400 mt-1">-- %</div>
-                        <div class="text-[10px] text-slate-500">High Prize Tier</div>
-                    </div>
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
-                        <div class="text-xs text-slate-400">Avg Sum Range Fit</div>
-                        <div id="sim-sumfit" class="text-lg font-extrabold text-purple-400 mt-1">-- %</div>
-                        <div class="text-[10px] text-slate-500">Fitted in 120-180 Range</div>
-                    </div>
-                </div>
-
-                <!-- Simulation Progress / Chart -->
-                <div class="h-64 w-full">
-                    <canvas id="chartSimResults"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 5: STATISTICAL ANALYTICS CHARTS -->
-        <section id="tab-content-stats" class="hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Chart 1: Sum Range Bell Curve Distribution -->
-                <div class="lg:col-span-8 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl flex flex-col">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b border-slate-800 pb-3">
-                        <div>
-                            <h2 class="text-base font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-chart-column text-amber-400"></i> Sum Distribution Bell Curve (Historical vs Bounds)
-                            </h2>
-                            <p class="text-xs text-slate-400">Winning sum frequencies highlight 120–180 as peak probability density.</p>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>Locked (<span id="count-locked" class="text-amber-400 font-bold">0</span>):</span>
+                        <div id="locked-chips" class="flex flex-wrap gap-1 max-w-[150px] justify-end">
+                            <span class="text-[10px] italic text-slate-600">None</span>
                         </div>
                     </div>
-                    <div class="h-80 w-full flex-1">
-                        <canvas id="chartSumDist"></canvas>
-                    </div>
-                </div>
-
-                <!-- Chart 2: Top Co-occurrence Pair Matrix & Ranks -->
-                <div class="lg:col-span-4 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-4 flex flex-col justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-white mb-1 flex items-center gap-2">
-                            <i class="fa-solid fa-handshake text-emerald-400"></i> Top Co-Occurrence Pairs
-                        </h2>
-                        <p class="text-xs text-slate-400 mb-3">Ball pairs that statistically hit together most frequently</p>
-                        
-                        <div id="pair-ranking-list" class="space-y-2">
-                            <!-- Populated JS -->
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>Excluded (<span id="count-excluded" class="text-red-400 font-bold">0</span>):</span>
+                        <div id="excluded-chips" class="flex flex-wrap gap-1 max-w-[150px] justify-end">
+                            <span class="text-[10px] italic text-slate-600">None</span>
                         </div>
                     </div>
                 </div>
 
-            </div>
-        </section>
-
-    </main>
-
-    <!-- WEIGHT TUNING & STATS IMPORT MODAL -->
-    <div id="scraper-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                        <i class="fa-solid fa-sliders text-base"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white text-sm">Model Parameter Tuning & Import</h3>
-                        <p class="text-[11px] text-slate-400">Adjust optimization weights & parse HKJC data</p>
-                    </div>
-                </div>
-                <button onclick="closeScraperModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <!-- Generate Button -->
+                <button onclick="generateOptimizedTickets()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-500/20 transition transform active:scale-[0.99] flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-dice text-lg"></i>
+                    <span>GENERATE OPTIMIZED TICKET</span>
                 </button>
             </div>
 
-            <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar">
-                <!-- Weight Sliders -->
-                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-4">
-                    <span class="text-xs font-bold text-slate-200 block">Hybrid Model Weight Sliders</span>
-                    
-                    <div>
-                        <div class="flex justify-between text-xs text-slate-400 mb-1">
-                            <span>Draw Lapse Weight (Poisson Expectation)</span>
-                            <span id="slider-val-lapse" class="text-amber-400 font-bold">40%</span>
-                        </div>
-                        <input type="range" id="slider-lapse" min="0" max="100" value="40" oninput="updateSliderLabels()" class="w-full accent-amber-500">
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-xs text-slate-400 mb-1">
-                            <span>Historical Frequency Weight</span>
-                            <span id="slider-val-freq" class="text-emerald-400 font-bold">30%</span>
-                        </div>
-                        <input type="range" id="slider-freq" min="0" max="100" value="30" oninput="updateSliderLabels()" class="w-full accent-emerald-500">
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-xs text-slate-400 mb-1">
-                            <span>Companion Pair Co-occurrence Weight</span>
-                            <span id="slider-val-pairs" class="text-blue-400 font-bold">30%</span>
-                        </div>
-                        <input type="range" id="slider-pairs" min="0" max="100" value="30" oninput="updateSliderLabels()" class="w-full accent-blue-500">
+            <!-- Generated Output Right Column (7 Cols) -->
+            <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 flex flex-col shadow-xl">
+                <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-ticket text-emerald-400"></i> Optimized Ticket Output
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="exportTicketsJSON()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition">
+                            <i class="fa-solid fa-file-code mr-1"></i>JSON
+                        </button>
+                        <button onclick="copyGeneratedLines()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition">
+                            <i class="fa-regular fa-copy mr-1"></i>Copy Lines
+                        </button>
+                        <button onclick="clearGeneratedLines()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 text-xs rounded-lg transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 </div>
 
+                <!-- Output Area -->
+                <div id="tickets-container" class="flex-1 py-4 space-y-3.5 overflow-y-auto custom-scrollbar max-h-[520px]">
+                    <div class="h-72 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-800 rounded-2xl">
+                        <div class="w-12 h-12 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center text-xl mb-3">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-slate-300">Statistical Engine Ready</h3>
+                        <p class="text-xs text-slate-500 max-w-xs mt-1">Select an optimization strategy and click "Generate Optimized Ticket" to calculate probability scores.</p>
+                    </div>
+                </div>
+
+                <!-- Footer Legend -->
+                <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Red</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Blue</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Green</span>
+                    </div>
+                    <div class="text-amber-400 font-mono"><i class="fa-solid fa-bullseye mr-1"></i>Targeting 120-180 Sum Bounds</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- TAB 2: TICKET VALIDATOR & PROBABILITY SCORE TOOL -->
+    <section id="tab-content-validator" class="hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Input Box -->
+            <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
+                <div class="border-b border-slate-800 pb-3">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Combination Validator & Scorer
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Test any 6 numbers to evaluate win probability score, sum bounds, and decade spread.</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-300">Select or Enter 6 Numbers (1 to 49)</label>
+                    <div id="validator-balls-input" class="grid grid-cols-6 gap-2 bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                        <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N1">
+                        <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N2">
+                        <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N3">
+                        <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N4">
+                        <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N5">
+                        <input type="number" min="1" max="49" class="val-num bg-slate-900 border border-slate-700 rounded-xl text-center py-2 text-xs font-bold text-amber-400 focus:ring-2 focus:ring-amber-500" placeholder="N6">
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="validateTicketInput()" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow">
+                        <i class="fa-solid fa-calculator mr-1.5"></i>Calculate Score
+                    </button>
+                    <button onclick="fillRandomValidatorInput()" class="px-3.5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                </div>
+
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs text-slate-400">
+                    <span class="font-semibold text-slate-200 block">Evaluation Criteria:</span>
+                    <ul class="space-y-1 list-disc list-inside text-[11px]">
+                        <li><strong>Sum Index:</strong> Highest score if sum is between 120 and 180.</li>
+                        <li><strong>Decade Spread:</strong> Favors combinations across 3 to 5 decade groups.</li>
+                        <li><strong>Odd/Even Ratio:</strong> 3:3 or 4:2 ratio gets 100% sub-score.</li>
+                        <li><strong>Companion Pair Hit:</strong> Checks pair co-occurrence strength.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Validation Analysis Results -->
+            <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5 flex flex-col justify-between">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Raw HKJC Stats / JSON Import</label>
-                    <textarea id="input-raw-stats" rows="3" placeholder="Paste HTML table or JSON from HKJC statistics..." 
-                              class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 custom-scrollbar"></textarea>
-                    <button onclick="parsePastedStats()" class="w-full mt-2 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">
-                        Parse & Apply HKJC Parameters
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-emerald-400"></i> Statistical Index Breakdown
+                        </h2>
+                        <span id="validator-score-badge" class="text-sm font-extrabold px-3 py-1 rounded-xl bg-slate-800 text-slate-400 border border-slate-700">
+                            Score: -- / 100
+                        </span>
+                    </div>
+
+                    <!-- Ticket Balls Display -->
+                    <div id="validator-balls-display" class="flex items-center justify-center space-x-3 my-4 bg-slate-950 p-4 rounded-2xl border border-slate-800 min-h-[70px]">
+                        <span class="text-xs text-slate-500 italic">Enter numbers to analyze</span>
+                    </div>
+
+                    <!-- Breakdown Radar Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
+                            <div class="text-[10px] text-slate-400">Sum Bounds</div>
+                            <div id="val-sum-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
+                            <div id="val-sum-score" class="text-[10px] font-semibold text-amber-400">0%</div>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
+                            <div class="text-[10px] text-slate-400">Odd / Even</div>
+                            <div id="val-oddeven-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
+                            <div id="val-oddeven-score" class="text-[10px] font-semibold text-emerald-400">0%</div>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
+                            <div class="text-[10px] text-slate-400">Decade Spread</div>
+                            <div id="val-decade-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
+                            <div id="val-decade-score" class="text-[10px] font-semibold text-blue-400">0%</div>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-center">
+                            <div class="text-[10px] text-slate-400">Color Balance</div>
+                            <div id="val-color-val" class="text-sm font-bold text-slate-100 mt-1">--</div>
+                            <div id="val-color-score" class="text-[10px] font-semibold text-purple-400">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Verdict Box -->
+                <div id="validator-verdict" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs text-slate-400 leading-relaxed">
+                    <strong class="text-slate-200 block mb-1">Model Verdict:</strong>
+                    Input 6 numbers above to calculate statistical probability score.
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- TAB 3: HEATMAP GRID & PROBABILITY WEIGHTS -->
+    <section id="tab-content-grid" class="hidden space-y-4">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-amber-400"></i> Probability Heatmap & Matrix
+                    </h2>
+                    <p class="text-xs text-slate-400">Color intensity reflects calculated win expectation probability. Click to Lock/Exclude.</p>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="clearAllGridSelections()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+                        <i class="fa-solid fa-rotate-left mr-1.5"></i>Reset Locks & Excludes
                     </button>
                 </div>
             </div>
+
+            <!-- Mode Controls & Color Scale -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+                <div class="flex items-center space-x-4">
+                    <span class="font-semibold text-slate-300">Click Mode:</span>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="grid-mode" value="lock" checked class="text-amber-500 focus:ring-amber-500">
+                        <span class="text-amber-400 font-medium"><i class="fa-solid fa-lock text-xs mr-1"></i>Lock</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="grid-mode" value="exclude" class="text-red-500 focus:ring-red-500">
+                        <span class="text-red-400 font-medium"><i class="fa-solid fa-ban text-xs mr-1"></i>Exclude</span>
+                    </label>
+                </div>
+
+                <div class="flex items-center space-x-3 text-[11px] text-slate-400">
+                    <span>Heatmap Scale:</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-500"></span> High Exp.</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-500/60"></span> Med Exp.</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-800"></span> Low Exp.</span>
+                </div>
+            </div>
+
+            <!-- Matrix Grid -->
+            <div id="ball-matrix" class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-10 lg:grid-cols-14 gap-3 pt-2">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 4: MONTE CARLO SIMULATOR -->
+    <section id="tab-content-sim" class="hidden space-y-6">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-amber-400"></i> Monte Carlo Strategy Backtest Simulator
+                    </h2>
+                    <p class="text-xs text-slate-400">Run up to 10,000 simulated Mark Six draws to measure strategy hit rates.</p>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <select id="sim-draw-count" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200">
+                        <option value="1000">1,000 Draws</option>
+                        <option value="5000">5,000 Draws</option>
+                        <option value="10000" selected>10,000 Draws</option>
+                    </select>
+                    <button onclick="runMonteCarloSimulation()" id="btn-run-sim" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-extrabold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Run Backtest</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Simulation Stats Summary Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                    <div class="text-xs text-slate-400">3-Match Win Rate</div>
+                    <div id="sim-match3" class="text-lg font-extrabold text-amber-400 mt-1">-- %</div>
+                    <div class="text-[10px] text-slate-500">Prize Level 7 Equivalent</div>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                    <div class="text-xs text-slate-400">4-Match Win Rate</div>
+                    <div id="sim-match4" class="text-lg font-extrabold text-emerald-400 mt-1">-- %</div>
+                    <div class="text-[10px] text-slate-500">Priating Level 5 Equivalent</div>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                    <div class="text-xs text-slate-400">5-Match Win Rate</div>
+                    <div id="sim-match5" class="text-lg font-extrabold text-blue-400 mt-1">-- %</div>
+                    <div class="text-[10px] text-slate-500">High Prize Tier</div>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                    <div class="text-xs text-slate-400">Avg Sum Range Fit</div>
+                    <div id="sim-sumfit" class="text-lg font-extrabold text-purple-400 mt-1">-- %</div>
+                    <div class="text-[10px] text-slate-500">Fitted in 120-180 Range</div>
+                </div>
+            </div>
+
+            <!-- Simulation Progress / Chart -->
+            <div class="h-64 w-full">
+                <canvas id="chartSimResults"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 5: STATISTICAL ANALYTICS CHARTS -->
+    <section id="tab-content-stats" class="hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Chart 1: Sum Range Bell Curve Distribution -->
+            <div class="lg:col-span-8 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl flex flex-col">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-amber-400"></i> Sum Distribution Bell Curve (Historical vs Bounds)
+                        </h2>
+                        <p class="text-xs text-slate-400">Winning sum frequencies highlight 120–180 as peak probability density.</p>
+                    </div>
+                </div>
+                <div class="h-80 w-full flex-1">
+                    <canvas id="chartSumDist"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Top Co-occurrence Pair Matrix & Ranks -->
+            <div class="lg:col-span-4 bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-4 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-handshake text-emerald-400"></i> Top Co-Occurrence Pairs
+                    </h2>
+                    <p class="text-xs text-slate-400 mb-3">Ball pairs that statistically hit together most frequently</p>
+                    
+                    <div id="pair-ranking-list" class="space-y-2">
+                        <!-- Populated JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- WEIGHT TUNING & STATS IMPORT MODAL -->
+<div id="scraper-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                    <i class="fa-solid fa-sliders text-base"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-sm">Model Parameter Tuning & Import</h3>
+                    <p class="text-[11px] text-slate-400">Adjust optimization weights & parse HKJC data</p>
+                </div>
+            </div>
+            <button onclick="closeScraperModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar">
+            <!-- Weight Sliders -->
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-4">
+                <span class="text-xs font-bold text-slate-200 block">Hybrid Model Weight Sliders</span>
+                
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Draw Lapse Weight (Poisson Expectation)</span>
+                        <span id="slider-val-lapse" class="text-amber-400 font-bold">40%</span>
+                    </div>
+                    <input type="range" id="slider-lapse" min="0" max="100" value="40" oninput="updateSliderLabels()" class="w-full accent-amber-500">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Historical Frequency Weight</span>
+                        <span id="slider-val-freq" class="text-emerald-400 font-bold">30%</span>
+                    </div>
+                    <input type="range" id="slider-freq" min="0" max="100" value="30" oninput="updateSliderLabels()" class="w-full accent-emerald-500">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Companion Pair Co-occurrence Weight</span>
+                        <span id="slider-val-pairs" class="text-blue-400 font-bold">30%</span>
+                    </div>
+                    <input type="range" id="slider-pairs" min="0" max="100" value="30" oninput="updateSliderLabels()" class="w-full accent-blue-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Raw HKJC Stats / JSON Import</label>
+                <textarea id="input-raw-stats" rows="3" placeholder="Paste HTML table or JSON from HKJC statistics..." 
+                          class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-300 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 custom-scrollbar"></textarea>
+                <button onclick="parsePastedStats()" class="w-full mt-2 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">
+                    Parse & Apply HKJC Parameters
+                </button>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 border border-slate-700 text-slate-100 px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
-        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
-        <span id="toast-msg">Notification</span>
-    </div>
+<!-- Toast -->
+<div id="toast" class="fixed bottom-5 right-5 bg-slate-800 border border-slate-700 text-slate-100 px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+    <span id="toast-msg">Notification</span>
+</div>
 
-    <!-- JAVASCRIPT APPLICATION CODE -->
-    <script>
-        // Official Ball Color Mapping
-        const BALL_COLORS = {
-            red: [1, 2, 7, 8, 12, 13, 17, 18, 21, 22, 27, 28, 32, 33, 38, 39, 43, 44, 49],
-            blue: [3, 4, 9, 10, 14, 15, 20, 25, 26, 31, 36, 37, 41, 42, 47, 48],
-            green: [5, 6, 11, 16, 19, 23, 24, 29, 30, 34, 35, 40, 45, 46]
+<!-- JAVASCRIPT APPLICATION CODE -->
+<script>
+    // Official Ball Color Mapping
+    const BALL_COLORS = {
+        red: [1, 2, 7, 8, 12, 13, 17, 18, 21, 22, 27, 28, 32, 33, 38, 39, 43, 44, 49],
+        blue: [3, 4, 9, 10, 14, 15, 20, 25, 26, 31, 36, 37, 41, 42, 47, 48],
+        green: [5, 6, 11, 16, 19, 23, 24, 29, 30, 34, 35, 40, 45, 46]
+    };
+
+    function getBallColor(num) {
+        const n = parseInt(num, 10);
+        if (BALL_COLORS.red.includes(n)) return 'red';
+        if (BALL_COLORS.blue.includes(n)) return 'blue';
+        if (BALL_COLORS.green.includes(n)) return 'green';
+        return 'red';
+    }
+
+    // Realistic HKJC Lapse & Frequency Dataset
+    const BASE_LAPSE_DATA = {
+        1: 4,  2: 1,  3: 6,  4: 0,  5: 3,  6: 5,  7: 2,  8: 7,  9: 4,  10: 6,
+        11: 1, 12: 0, 13: 5, 14: 3, 15: 8, 16: 4, 17: 6, 18: 2, 19: 0, 20: 3,
+        21: 5, 22: 1, 23: 11,24: 6, 25: 4, 26: 6, 27: 10,28: 0, 29: 2, 30: 4,
+        31: 1, 32: 9, 33: 3, 34: 0, 35: 6, 36: 2, 37: 5, 38: 3, 39: 9, 40: 1,
+        41: 7, 42: 3, 43: 8, 44: 4, 45: 1, 46: 5, 47: 0, 48: 6, 49: 2
+    };
+
+    const BASE_FREQ_DATA = {
+        1: 42, 2: 38, 3: 45, 4: 51, 5: 39, 6: 41, 7: 48, 8: 36, 9: 44, 10: 55,
+        11: 40,12: 52,13: 37,14: 43,15: 33,16: 46,17: 39,18: 49,19: 50,20: 41,
+        21: 35,22: 56,23: 30,24: 42,25: 44,26: 38,27: 31,28: 53,29: 47,30: 40,
+        31: 43,32: 34,33: 45,34: 54,35: 37,36: 48,37: 41,38: 43,39: 32,40: 46,
+        41: 35,42: 43,43: 33,44: 41,45: 49,46: 39,47: 52,48: 37,49: 45
+    };
+
+    // Top Co-Occurrence Pairs (Historical HKJC hits together)
+    const TOP_PAIRS = [
+        { pair: [10, 22], hits: 14 },
+        { pair: [4, 12], hits: 13 },
+        { pair: [19, 34], hits: 12 },
+        { pair: [28, 47], hits: 12 },
+        { pair: [7, 18], hits: 11 }
+    ];
+
+    // State variables
+    let lockedNumbers = new Set();
+    let excludedNumbers = new Set();
+    let generatedTickets = [];
+
+    // Chart Instances
+    let chartSumDistInstance = null;
+    let chartSimInstance = null;
+
+    window.onload = function() {
+        renderHeatmapGrid();
+        updateTopSummary();
+        renderPairRankings();
+        initCharts();
+        updateStrategyDesc();
+    };
+
+    function switchTab(tabKey) {
+        const tabs = ['gen', 'validator', 'grid', 'sim', 'stats'];
+        tabs.forEach(t => {
+            const content = document.getElementById(`tab-content-${t}`);
+            const navBtn = document.getElementById(`nav-${t}`);
+
+            if (t === tabKey) {
+                content.classList.remove('hidden');
+                navBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 shadow transition";
+            } else {
+                content.classList.add('hidden');
+                navBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition";
+            }
+        });
+
+        if (tabKey === 'stats' || tabKey === 'sim') {
+            setTimeout(() => initCharts(), 50);
+        }
+    }
+
+    function updateStrategyDesc() {
+        const val = document.getElementById('gen-strategy').value;
+        const descEl = document.getElementById('strategy-desc');
+
+        const descs = {
+            hybrid: "⚡ <strong>Hybrid Probability Maxima:</strong> Weighted composite of lapse Poisson reversion, hotness momentum, pair co-occurrence, and sum range filtering.",
+            goldensum: "🌟 <strong>Golden Ratio Sum & Range Filter:</strong> Forces total 6-ball sum into optimal 120-180 envelope while keeping decade distribution balanced.",
+            pairs: "🤝 <strong>Companion Pair Optimizer:</strong> Identifies and anchors statistically strong companion pairs (e.g., 10 & 22) into ticket selection.",
+            overdue: "⌛ <strong>Poisson Overdue Reversion:</strong> Heavily favors cold numbers with high 'Not Drawn' lapse counts.",
+            hot: "🔥 <strong>Hot Streak Momentum:</strong> Picks high-frequency numbers recently active in HKJC draw cycles."
         };
 
-        function getBallColor(num) {
-            const n = parseInt(num, 10);
-            if (BALL_COLORS.red.includes(n)) return 'red';
-            if (BALL_COLORS.blue.includes(n)) return 'blue';
-            if (BALL_COLORS.green.includes(n)) return 'green';
-            return 'red';
-        }
+        descEl.innerHTML = descs[val] || "";
+    }
 
-        // Realistic HKJC Lapse & Frequency Dataset
-        const BASE_LAPSE_DATA = {
-            1: 4,  2: 1,  3: 6,  4: 0,  5: 3,  6: 5,  7: 2,  8: 7,  9: 4,  10: 6,
-            11: 1, 12: 0, 13: 5, 14: 3, 15: 8, 16: 4, 17: 6, 18: 2, 19: 0, 20: 3,
-            21: 5, 22: 1, 23: 11,24: 6, 25: 4, 26: 6, 27: 10,28: 0, 29: 2, 30: 4,
-            31: 1, 32: 9, 33: 3, 34: 0, 35: 6, 36: 2, 37: 5, 38: 3, 39: 9, 40: 1,
-            41: 7, 42: 3, 43: 8, 44: 4, 45: 1, 46: 5, 47: 0, 48: 6, 49: 2
-        };
+    // --- COMPOSITE PROBABILITY WEIGHT CALCULATOR ---
+    function calculateBallProbability(num) {
+        const wLapse = parseInt(document.getElementById('slider-lapse').value, 10) / 100;
+        const wFreq = parseInt(document.getElementById('slider-freq').value, 10) / 100;
+        const wPairs = parseInt(document.getElementById('slider-pairs').value, 10) / 100;
 
-        const BASE_FREQ_DATA = {
-            1: 42, 2: 38, 3: 45, 4: 51, 5: 39, 6: 41, 7: 48, 8: 36, 9: 44, 10: 55,
-            11: 40,12: 52,13: 37,14: 43,15: 33,16: 46,17: 39,18: 49,19: 50,20: 41,
-            21: 35,22: 56,23: 30,24: 42,25: 44,26: 38,27: 31,28: 53,29: 47,30: 40,
-            31: 43,32: 34,33: 45,34: 54,35: 37,36: 48,37: 41,38: 43,39: 32,40: 46,
-            41: 35,42: 43,43: 33,44: 41,45: 49,46: 39,47: 52,48: 37,49: 45
-        };
+        const lapseScore = (BASE_LAPSE_DATA[num] || 0) * 8;
+        const freqScore = ((BASE_FREQ_DATA[num] || 35) - 30) * 3;
+        
+        // Pair boost score
+        let pairScore = 0;
+        TOP_PAIRS.forEach(p => {
+            if (p.pair.includes(num)) pairScore += p.hits * 2;
+        });
 
-        // Top Co-Occurrence Pairs (Historical HKJC hits together)
-        const TOP_PAIRS = [
-            { pair: [10, 22], hits: 14 },
-            { pair: [4, 12], hits: 13 },
-            { pair: [19, 34], hits: 12 },
-            { pair: [28, 47], hits: 12 },
-            { pair: [7, 18], hits: 11 }
-        ];
+        const totalScore = (lapseScore * wLapse) + (freqScore * wFreq) + (pairScore * wPairs);
+        return Math.max(10, Math.min(99, Math.round(totalScore)));
+    }
 
-        // State variables
-        let lockedNumbers = new Set();
-        let excludedNumbers = new Set();
-        let generatedTickets = [];
+    // --- TICKET GENERATOR ---
+    function generateOptimizedTickets() {
+        const strategy = document.getElementById('gen-strategy').value;
+        const entryType = document.getElementById('gen-entry-type').value;
+        const lineCount = parseInt(document.getElementById('gen-line-count').value, 10);
 
-        // Chart Instances
-        let chartSumDistInstance = null;
-        let chartSimInstance = null;
+        const filterSum = document.getElementById('filter-sum').checked;
+        const filterOddEven = document.getElementById('filter-oddeven').checked;
+        const filterDecade = document.getElementById('filter-decade').checked;
 
-        window.onload = function() {
-            renderHeatmapGrid();
-            updateTopSummary();
-            renderPairRankings();
-            initCharts();
-            updateStrategyDesc();
-        };
+        const ballCount = entryType === 'system7' ? 7 : entryType === 'system8' ? 8 : 6;
+        const results = [];
 
-        function switchTab(tabKey) {
-            const tabs = ['gen', 'validator', 'grid', 'sim', 'stats'];
-            tabs.forEach(t => {
-                const content = document.getElementById(`tab-content-${t}`);
-                const navBtn = document.getElementById(`nav-${t}`);
+        for (let i = 0; i < lineCount; i++) {
+            let ticket = null;
+            let attempts = 0;
 
-                if (t === tabKey) {
-                    content.classList.remove('hidden');
-                    navBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 shadow transition";
-                } else {
-                    content.classList.add('hidden');
-                    navBtn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition";
-                }
-            });
-
-            if (tabKey === 'stats' || tabKey === 'sim') {
-                setTimeout(() => initCharts(), 50);
-            }
-        }
-
-        function updateStrategyDesc() {
-            const val = document.getElementById('gen-strategy').value;
-            const descEl = document.getElementById('strategy-desc');
-
-            const descs = {
-                hybrid: "⚡ <strong>Hybrid Probability Maxima:</strong> Weighted composite of lapse Poisson reversion, hotness momentum, pair co-occurrence, and sum range filtering.",
-                goldensum: "🌟 <strong>Golden Ratio Sum & Range Filter:</strong> Forces total 6-ball sum into optimal 120-180 envelope while keeping decade distribution balanced.",
-                pairs: "🤝 <strong>Companion Pair Optimizer:</strong> Identifies and anchors statistically strong companion pairs (e.g., 10 & 22) into ticket selection.",
-                overdue: "⌛ <strong>Poisson Overdue Reversion:</strong> Heavily favors cold numbers with high 'Not Drawn' lapse counts.",
-                hot: "🔥 <strong>Hot Streak Momentum:</strong> Picks high-frequency numbers recently active in HKJC draw cycles."
-            };
-
-            descEl.innerHTML = descs[val] || "";
-        }
-
-        // --- COMPOSITE PROBABILITY WEIGHT CALCULATOR ---
-        function calculateBallProbability(num) {
-            const wLapse = parseInt(document.getElementById('slider-lapse').value, 10) / 100;
-            const wFreq = parseInt(document.getElementById('slider-freq').value, 10) / 100;
-            const wPairs = parseInt(document.getElementById('slider-pairs').value, 10) / 100;
-
-            const lapseScore = (BASE_LAPSE_DATA[num] || 0) * 8;
-            const freqScore = ((BASE_FREQ_DATA[num] || 35) - 30) * 3;
-            
-            // Pair boost score
-            let pairScore = 0;
-            TOP_PAIRS.forEach(p => {
-                if (p.pair.includes(num)) pairScore += p.hits * 2;
-            });
-
-            const totalScore = (lapseScore * wLapse) + (freqScore * wFreq) + (pairScore * wPairs);
-            return Math.max(10, Math.min(99, Math.round(totalScore)));
-        }
-
-        // --- TICKET GENERATOR ---
-        function generateOptimizedTickets() {
-            const strategy = document.getElementById('gen-strategy').value;
-            const entryType = document.getElementById('gen-entry-type').value;
-            const lineCount = parseInt(document.getElementById('gen-line-count').value, 10);
-
-            const filterSum = document.getElementById('filter-sum').checked;
-            const filterOddEven = document.getElementById('filter-oddeven').checked;
-            const filterDecade = document.getElementById('filter-decade').checked;
-
-            const ballCount = entryType === 'system7' ? 7 : entryType === 'system8' ? 8 : 6;
-            const results = [];
-
-            for (let i = 0; i < lineCount; i++) {
-                let ticket = null;
-                let attempts = 0;
-
-                while (!ticket && attempts < 200) {
-                    attempts++;
-                    const candidate = generateSingleCandidate(strategy, ballCount);
-                    if (validateCandidateConstraints(candidate, filterSum, filterOddEven, filterDecade)) {
-                        ticket = candidate;
-                    }
-                }
-
-                if (!ticket) {
-                    // Fallback
-                    ticket = generateSingleCandidate('hybrid', ballCount);
-                }
-
-                results.push(ticket);
-            }
-
-            generatedTickets = results;
-            renderGeneratedOutput();
-
-            confetti({
-                particleCount: 50,
-                spread: 70,
-                origin: { y: 0.8 },
-                colors: ['#f59e0b', '#10b981', '#ef4444', '#3b82f6']
-            });
-
-            showToast(`Generated ${lineCount} optimized ticket(s)!`, "success");
-        }
-
-        function generateSingleCandidate(strategy, count) {
-            let selected = new Set(lockedNumbers);
-            const pool = [];
-
-            for (let i = 1; i <= 49; i++) {
-                if (!excludedNumbers.has(i) && !selected.has(i)) {
-                    pool.push(i);
+            while (!ticket && attempts < 200) {
+                attempts++;
+                const candidate = generateSingleCandidate(strategy, ballCount);
+                if (validateCandidateConstraints(candidate, filterSum, filterOddEven, filterDecade)) {
+                    ticket = candidate;
                 }
             }
 
-            while (selected.size < count && pool.length > 0) {
-                let picked = null;
-
-                if (strategy === 'pairs' && selected.size < 2) {
-                    // Anchor top pair
-                    const topPairObj = TOP_PAIRS[Math.floor(Math.random() * TOP_PAIRS.length)];
-                    picked = topPairObj.pair[Math.floor(Math.random() * 2)];
-                } else {
-                    // Weighted random based on composite probability
-                    picked = pickWeightedCandidate(pool);
-                }
-
-                if (picked && pool.includes(picked)) {
-                    selected.add(picked);
-                    const idx = pool.indexOf(picked);
-                    if (idx > -1) pool.splice(idx, 1);
-                }
+            if (!ticket) {
+                // Fallback
+                ticket = generateSingleCandidate('hybrid', ballCount);
             }
 
-            const sorted = Array.from(selected).sort((a, b) => a - b);
-            return sorted;
+            results.push(ticket);
         }
 
-        function pickWeightedCandidate(arr) {
-            const weights = arr.map(n => calculateBallProbability(n));
-            const total = weights.reduce((a, b) => a + b, 0);
-            let rand = Math.random() * total;
+        generatedTickets = results;
+        renderGeneratedOutput();
 
-            for (let i = 0; i < arr.length; i++) {
-                if (rand < weights[i]) return arr[i];
-                rand -= weights[i];
+        confetti({
+            particleCount: 50,
+            spread: 70,
+            origin: { y: 0.8 },
+            colors: ['#f59e0b', '#10b981', '#ef4444', '#3b82f6']
+        });
+
+        showToast(`Generated ${lineCount} optimized ticket(s)!`, "success");
+    }
+
+    function generateSingleCandidate(strategy, count) {
+        let selected = new Set(lockedNumbers);
+        const pool = [];
+
+        for (let i = 1; i <= 49; i++) {
+            if (!excludedNumbers.has(i) && !selected.has(i)) {
+                pool.push(i);
             }
-            return arr[0];
         }
 
-        function validateCandidateConstraints(balls, filterSum, filterOddEven, filterDecade) {
-            const main6 = balls.slice(0, 6);
-            const sum = main6.reduce((a, b) => a + b, 0);
+        while (selected.size < count && pool.length > 0) {
+            let picked = null;
 
-            if (filterSum && (sum < 120 || sum > 180)) return false;
-
-            if (filterOddEven) {
-                const odds = main6.filter(n => n % 2 !== 0).length;
-                if (odds < 2 || odds > 4) return false;
+            if (strategy === 'pairs' && selected.size < 2) {
+                // Anchor top pair
+                const topPairObj = TOP_PAIRS[Math.floor(Math.random() * TOP_PAIRS.length)];
+                picked = topPairObj.pair[Math.floor(Math.random() * 2)];
+            } else {
+                // Weighted random based on composite probability
+                picked = pickWeightedCandidate(pool);
             }
 
-            if (filterDecade) {
-                const decades = new Set(main6.map(n => Math.floor(n / 10)));
-                if (decades.size < 3) return false;
+            if (picked && pool.includes(picked)) {
+                selected.add(picked);
+                const idx = pool.indexOf(picked);
+                if (idx > -1) pool.splice(idx, 1);
             }
-
-            return true;
         }
 
-        function renderGeneratedOutput() {
-            const container = document.getElementById('tickets-container');
-            if (generatedTickets.length === 0) return;
+        const sorted = Array.from(selected).sort((a, b) => a - b);
+        return sorted;
+    }
 
-            container.innerHTML = generatedTickets.map((line, idx) => {
-                const ballsHTML = line.map(n => createBallHTML(n)).join('');
-                const scoreObj = calculateTicketScore(line.slice(0, 6));
+    function pickWeightedCandidate(arr) {
+        const weights = arr.map(n => calculateBallProbability(n));
+        const total = weights.reduce((a, b) => a + b, 0);
+        let rand = Math.random() * total;
 
-                return `
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-3 animate-roll">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono text-amber-400 font-bold">ENTRY #${idx + 1} (${line.length} BALLS)</span>
-                            <div class="flex items-center space-x-2 text-[10px]">
-                                <span class="text-slate-400">Sum: <strong class="text-slate-200">${scoreObj.sum}</strong></span>
-                                <span class="text-slate-600">•</span>
-                                <span class="text-slate-400">Ratio: <strong class="text-slate-200">${scoreObj.odds}O/${scoreObj.evens}E</strong></span>
-                                <span class="text-slate-600">•</span>
-                                <span class="px-2 py-0.5 rounded-full font-bold ${scoreObj.totalScore >= 80 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">
-                                    Score: ${scoreObj.totalScore}%
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80 overflow-x-auto">
-                            ${ballsHTML}
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        for (let i = 0; i < arr.length; i++) {
+            if (rand < weights[i]) return arr[i];
+            rand -= weights[i];
         }
+        return arr[0];
+    }
 
-        function createBallHTML(num) {
-            const color = getBallColor(num);
-            const bgClass = color === 'red' ? 'ball-red' : color === 'blue' ? 'ball-blue' : 'ball-green';
-            return `
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full ${bgClass} text-white font-extrabold flex items-center justify-center text-xs sm:text-sm shadow-md shrink-0">
-                    ${String(num).padStart(2, '0')}
-                </div>
-            `;
-        }
+    function validateCandidateConstraints(balls, filterSum, filterOddEven, filterDecade) {
+        const main6 = balls.slice(0, 6);
+        const sum = main6.reduce((a, b) => a + b, 0);
 
-        // --- VALIDATOR SCORE ENGINE ---
-        function calculateTicketScore(balls) {
-            if (!balls || balls.length < 6) return { totalScore: 0, sum: 0, odds: 0, evens: 0, decades: 0 };
+        if (filterSum && (sum < 120 || sum > 180)) return false;
 
-            const main6 = balls.slice(0, 6);
-            const sum = main6.reduce((a, b) => a + b, 0);
+        if (filterOddEven) {
             const odds = main6.filter(n => n % 2 !== 0).length;
-            const evens = 6 - odds;
-            const decades = new Set(main6.map(n => Math.floor(n / 10))).size;
-
-            let sumScore = 100 - Math.abs(150 - sum) * 1.5;
-            sumScore = Math.max(20, Math.min(100, sumScore));
-
-            let oddEvenScore = (odds === 3) ? 100 : (odds === 2 || odds === 4) ? 85 : 40;
-            let decadeScore = (decades >= 4) ? 100 : (decades === 3) ? 80 : 35;
-
-            // Color balance
-            const colors = main6.map(n => getBallColor(n));
-            const colorSpread = new Set(colors).size;
-            let colorScore = colorSpread === 3 ? 100 : 60;
-
-            const totalScore = Math.round((sumScore * 0.35) + (oddEvenScore * 0.25) + (decadeScore * 0.25) + (colorScore * 0.15));
-
-            return { totalScore, sum, odds, evens, decades, sumScore, oddEvenScore, decadeScore, colorScore };
+            if (odds < 2 || odds > 4) return false;
         }
 
-        function validateTicketInput() {
-            const inputs = document.querySelectorAll('.val-num');
-            const nums = [];
-            inputs.forEach(inp => {
-                const val = parseInt(inp.value, 10);
-                if (val >= 1 && val <= 49) nums.push(val);
-            });
-
-            if (nums.length < 6) {
-                showToast("Please enter 6 valid unique numbers (1-49).", "error");
-                return;
-            }
-
-            const uniqueNums = Array.from(new Set(nums)).sort((a, b) => a - b);
-            if (uniqueNums.length < 6) {
-                showToast("Duplicate numbers detected. Provide 6 distinct numbers.", "error");
-                return;
-            }
-
-            const res = calculateTicketScore(uniqueNums);
-
-            // Update UI
-            document.getElementById('validator-balls-display').innerHTML = uniqueNums.map(n => createBallHTML(n)).join('');
-            document.getElementById('validator-score-badge').textContent = `Score: ${res.totalScore} / 100`;
-            
-            document.getElementById('val-sum-val').textContent = res.sum;
-            document.getElementById('val-sum-score').textContent = `${Math.round(res.sumScore)}%`;
-
-            document.getElementById('val-oddeven-val').textContent = `${res.odds}O / ${res.evens}E`;
-            document.getElementById('val-oddeven-score').textContent = `${res.oddEvenScore}%`;
-
-            document.getElementById('val-decade-val').textContent = `${res.decades} Decades`;
-            document.getElementById('val-decade-score').textContent = `${res.decadeScore}%`;
-
-            document.getElementById('val-color-val').textContent = "Balanced";
-            document.getElementById('val-color-score').textContent = `${res.colorScore}%`;
-
-            const verdictEl = document.getElementById('validator-verdict');
-            if (res.totalScore >= 80) {
-                verdictEl.innerHTML = `<strong class="text-emerald-400 block mb-1">High Win Probability Rating (${res.totalScore}%)</strong> Line falls within optimal historical parameters (Sum ${res.sum}, ${res.decades} decade spread). Highly recommended.`;
-            } else {
-                verdictEl.innerHTML = `<strong class="text-amber-400 block mb-1">Sub-optimal Combination (${res.totalScore}%)</strong> Line deviates from prime sum bounds (120-180) or lacks decade spread. Consider re-balancing.`;
-            }
+        if (filterDecade) {
+            const decades = new Set(main6.map(n => Math.floor(n / 10)));
+            if (decades.size < 3) return false;
         }
 
-        function fillRandomValidatorInput() {
-            const inputs = document.querySelectorAll('.val-num');
-            const randLine = generateSingleCandidate('hybrid', 6);
-            inputs.forEach((inp, idx) => {
-                inp.value = randLine[idx];
-            });
-            validateTicketInput();
-        }
+        return true;
+    }
 
-        // --- HEATMAP MATRIX GRID ---
-        function renderHeatmapGrid() {
-            const matrix = document.getElementById('ball-matrix');
-            matrix.innerHTML = '';
+    function renderGeneratedOutput() {
+        const container = document.getElementById('tickets-container');
+        if (generatedTickets.length === 0) return;
 
-            for (let i = 1; i <= 49; i++) {
-                const prob = calculateBallProbability(i);
-                const color = getBallColor(i);
-                const isLocked = lockedNumbers.has(i);
-                const isExcluded = excludedNumbers.has(i);
+        container.innerHTML = generatedTickets.map((line, idx) => {
+            const ballsHTML = line.map(n => createBallHTML(n)).join('');
+            const scoreObj = calculateTicketScore(line.slice(0, 6));
 
-                const bgClass = color === 'red' ? 'ball-red' : color === 'blue' ? 'ball-blue' : 'ball-green';
-
-                const card = document.createElement('div');
-                card.className = `relative flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950 border transition-all cursor-pointer group ${
-                    isLocked ? 'border-amber-500 ring-2 ring-amber-500/40' : 
-                    isExcluded ? 'border-red-900/60 opacity-40 bg-red-950/10' : 
-                    'border-slate-800 hover:border-slate-700'
-                }`;
-
-                card.onclick = () => handleGridBallClick(i);
-
-                card.innerHTML = `
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full ${bgClass} text-white font-extrabold flex items-center justify-center text-xs sm:text-sm shadow-md mb-1 transition-transform group-hover:scale-105">
-                        ${String(i).padStart(2, '0')}
+            return `
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-3 animate-roll">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono text-amber-400 font-bold">ENTRY #${idx + 1} (${line.length} BALLS)</span>
+                        <div class="flex items-center space-x-2 text-[10px]">
+                            <span class="text-slate-400">Sum: <strong class="text-slate-200">${scoreObj.sum}</strong></span>
+                            <span class="text-slate-600">•</span>
+                            <span class="text-slate-400">Ratio: <strong class="text-slate-200">${scoreObj.odds}O/${scoreObj.evens}E</strong></span>
+                            <span class="text-slate-600">•</span>
+                            <span class="px-2 py-0.5 rounded-full font-bold ${scoreObj.totalScore >= 80 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">
+                                Score: ${scoreObj.totalScore}%
+                            </span>
+                        </div>
                     </div>
-                    
-                    <span class="text-[10px] font-mono font-bold text-amber-400">
-                        ${prob}% Exp.
-                    </span>
 
-                    ${isLocked ? '<i class="fa-solid fa-lock text-amber-400 text-xs absolute top-1.5 right-1.5"></i>' : ''}
-                    ${isExcluded ? '<i class="fa-solid fa-ban text-red-500 text-xs absolute top-1.5 right-1.5"></i>' : ''}
-                `;
-
-                matrix.appendChild(card);
-            }
-        }
-
-        function handleGridBallClick(num) {
-            const mode = document.querySelector('input[name="grid-mode"]:checked').value;
-
-            if (mode === 'lock') {
-                if (lockedNumbers.has(num)) lockedNumbers.delete(num);
-                else {
-                    if (lockedNumbers.size >= 6) return showToast("Max 6 locks allowed", "error");
-                    lockedNumbers.add(num);
-                    excludedNumbers.delete(num);
-                }
-            } else {
-                if (excludedNumbers.has(num)) excludedNumbers.delete(num);
-                else {
-                    excludedNumbers.add(num);
-                    lockedNumbers.delete(num);
-                }
-            }
-
-            renderHeatmapGrid();
-            updateLockExcludeChips();
-        }
-
-        function clearAllGridSelections() {
-            lockedNumbers.clear();
-            excludedNumbers.clear();
-            renderHeatmapGrid();
-            updateLockExcludeChips();
-            showToast("Cleared selections.", "success");
-        }
-
-        function updateLockExcludeChips() {
-            document.getElementById('count-locked').textContent = lockedNumbers.size;
-            document.getElementById('count-excluded').textContent = excludedNumbers.size;
-
-            document.getElementById('locked-chips').innerHTML = lockedNumbers.size === 0 
-                ? '<span class="text-[10px] italic text-slate-600">None</span>'
-                : Array.from(lockedNumbers).map(n => `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold">#${n}</span>`).join('');
-
-            document.getElementById('excluded-chips').innerHTML = excludedNumbers.size === 0 
-                ? '<span class="text-[10px] italic text-slate-600">None</span>'
-                : Array.from(excludedNumbers).map(n => `<span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px] font-bold">#${n}</span>`).join('');
-        }
-
-        // --- MONTE CARLO SIMULATOR ---
-        function runMonteCarloSimulation() {
-            const drawCount = parseInt(document.getElementById('sim-draw-count').value, 10);
-            const btn = document.getElementById('btn-run-sim');
-
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Testing...`;
-
-            setTimeout(() => {
-                let match3 = 0, match4 = 0, match5 = 0, sumFit = 0;
-                const sampleUserLine = generateSingleCandidate('hybrid', 6);
-
-                for (let i = 0; i < drawCount; i++) {
-                    const simDraw = generateSingleCandidate('random', 6);
-                    const matches = simDraw.filter(n => sampleUserLine.includes(n)).length;
-
-                    if (matches === 3) match3++;
-                    if (matches === 4) match4++;
-                    if (matches >= 5) match5++;
-
-                    const sum = simDraw.reduce((a, b) => a + b, 0);
-                    if (sum >= 120 && sum <= 180) sumFit++;
-                }
-
-                document.getElementById('sim-match3').textContent = `${((match3 / drawCount) * 100).toFixed(2)}%`;
-                document.getElementById('sim-match4').textContent = `${((match4 / drawCount) * 100).toFixed(2)}%`;
-                document.getElementById('sim-match5').textContent = `${((match5 / drawCount) * 100).toFixed(3)}%`;
-                document.getElementById('sim-sumfit').textContent = `${((sumFit / drawCount) * 100).toFixed(1)}%`;
-
-                renderSimChart([match3, match4, match5, sumFit], drawCount);
-
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-play"></i> Run Backtest`;
-                showToast(`Simulation across ${drawCount.toLocaleString()} draws complete!`, "success");
-            }, 100);
-        }
-
-        function renderSimChart(dataArr, totalDraws) {
-            const ctx = document.getElementById('chartSimResults').getContext('2d');
-            if (chartSimInstance) chartSimInstance.destroy();
-
-            chartSimInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['3-Matches', '4-Matches', '5+ Matches', '120-180 Sum Fit'],
-                    datasets: [{
-                        label: 'Simulated Hit Frequency',
-                        data: dataArr,
-                        backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
-                    }
-                }
-            });
-        }
-
-        // --- STATS ANALYTICS CHARTS ---
-        function initCharts() {
-            // 1. Sum Range Distribution Chart
-            const ctxSum = document.getElementById('chartSumDist').getContext('2d');
-            if (chartSumDistInstance) chartSumDistInstance.destroy();
-
-            chartSumDistInstance = new Chart(ctxSum, {
-                type: 'line',
-                data: {
-                    labels: ['60-90', '91-119', '120-140', '141-160', '161-180', '181-200', '201+'],
-                    datasets: [{
-                        label: 'Historical HKJC Draw Frequency (%)',
-                        data: [4, 12, 28, 34, 18, 9, 3],
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#cbd5e1' } } },
-                    scales: {
-                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
-                    }
-                }
-            });
-        }
-
-        function renderPairRankings() {
-            const listEl = document.getElementById('pair-ranking-list');
-            listEl.innerHTML = TOP_PAIRS.map(item => `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-6 h-6 rounded-full ball-${getBallColor(item.pair[0])} text-white font-bold text-[10px] flex items-center justify-center">${item.pair[0]}</div>
-                        <span class="text-xs text-slate-400">&</span>
-                        <div class="w-6 h-6 rounded-full ball-${getBallColor(item.pair[1])} text-white font-bold text-[10px] flex items-center justify-center">${item.pair[1]}</div>
+                    <div class="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80 overflow-x-auto">
+                        ${ballsHTML}
                     </div>
-                    <span class="text-xs font-bold text-emerald-400">${item.hits} Co-Draws</span>
-                </div>
-            `).join('');
-        }
-
-        function updateTopSummary() {
-            const overdueNum = Object.entries(BASE_LAPSE_DATA).sort((a,b) => b[1] - a[1])[0];
-            document.getElementById('stat-top-overdue').innerHTML = `
-                <span class="w-4 h-4 rounded-full ball-${getBallColor(overdueNum[0])} text-white text-[9px] font-bold flex items-center justify-center">${overdueNum[0]}</span>
-                <span>No. ${overdueNum[0]} (${overdueNum[1]} draws)</span>
-            `;
-        }
-
-        function updateSliderLabels() {
-            document.getElementById('slider-val-lapse').textContent = `${document.getElementById('slider-lapse').value}%`;
-            document.getElementById('slider-val-freq').textContent = `${document.getElementById('slider-freq').value}%`;
-            document.getElementById('slider-val-pairs').textContent = `${document.getElementById('slider-pairs').value}%`;
-            renderHeatmapGrid();
-        }
-
-        function copyGeneratedLines() {
-            if (generatedTickets.length === 0) return;
-            const text = generatedTickets.map((l, i) => `Line ${i + 1}: ${l.map(n => String(n).padStart(2, '0')).join(', ')}`).join('\n');
-            navigator.clipboard ? navigator.clipboard.writeText(text) : alert(text);
-            showToast("Copied tickets to clipboard!", "success");
-        }
-
-        function exportTicketsJSON() {
-            if (generatedTickets.length === 0) return;
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generatedTickets, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "hkjc_marksix_optimized_tickets.json");
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-        }
-
-        function clearGeneratedLines() {
-            generatedTickets = [];
-            document.getElementById('tickets-container').innerHTML = `
-                <div class="h-72 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-800 rounded-2xl">
-                    <div class="w-12 h-12 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center text-xl mb-3">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
-                    <h3 class="text-sm font-semibold text-slate-300">Statistical Engine Ready</h3>
-                    <p class="text-xs text-slate-500 max-w-xs mt-1">Select an optimization strategy and click "Generate Optimized Ticket" to calculate probability scores.</p>
                 </div>
             `;
+        }).join('');
+    }
+
+    function createBallHTML(num) {
+        const color = getBallColor(num);
+        const bgClass = color === 'red' ? 'ball-red' : color === 'blue' ? 'ball-blue' : 'ball-green';
+        return `
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full ${bgClass} text-white font-extrabold flex items-center justify-center text-xs sm:text-sm shadow-md shrink-0">
+                ${String(num).padStart(2, '0')}
+            </div>
+        `;
+    }
+
+    // --- VALIDATOR SCORE ENGINE ---
+    function calculateTicketScore(balls) {
+        if (!balls || balls.length < 6) return { totalScore: 0, sum: 0, odds: 0, evens: 0, decades: 0 };
+
+        const main6 = balls.slice(0, 6);
+        const sum = main6.reduce((a, b) => a + b, 0);
+        const odds = main6.filter(n => n % 2 !== 0).length;
+        const evens = 6 - odds;
+        const decades = new Set(main6.map(n => Math.floor(n / 10))).size;
+
+        let sumScore = 100 - Math.abs(150 - sum) * 1.5;
+        sumScore = Math.max(20, Math.min(100, sumScore));
+
+        let oddEvenScore = (odds === 3) ? 100 : (odds === 2 || odds === 4) ? 85 : 40;
+        let decadeScore = (decades >= 4) ? 100 : (decades === 3) ? 80 : 35;
+
+        // Color balance
+        const colors = main6.map(n => getBallColor(n));
+        const colorSpread = new Set(colors).size;
+        let colorScore = colorSpread === 3 ? 100 : 60;
+
+        const totalScore = Math.round((sumScore * 0.35) + (oddEvenScore * 0.25) + (decadeScore * 0.25) + (colorScore * 0.15));
+
+        return { totalScore, sum, odds, evens, decades, sumScore, oddEvenScore, decadeScore, colorScore };
+    }
+
+    function validateTicketInput() {
+        const inputs = document.querySelectorAll('.val-num');
+        const nums = [];
+        inputs.forEach(inp => {
+            const val = parseInt(inp.value, 10);
+            if (val >= 1 && val <= 49) nums.push(val);
+        });
+
+        if (nums.length < 6) {
+            showToast("Please enter 6 valid unique numbers (1-49).", "error");
+            return;
         }
 
-        function openScraperModal() { document.getElementById('scraper-modal').classList.remove('hidden'); }
-        function closeScraperModal() { document.getElementById('scraper-modal').classList.add('hidden'); }
-
-        function showToast(msg, type = "success") {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').textContent = msg;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+        const uniqueNums = Array.from(new Set(nums)).sort((a, b) => a - b);
+        if (uniqueNums.length < 6) {
+            showToast("Duplicate numbers detected. Provide 6 distinct numbers.", "error");
+            return;
         }
-    </script>
-</body>
-</html>
+
+        const res = calculateTicketScore(uniqueNums);
+
+        // Update UI
+        document.getElementById('validator-balls-display').innerHTML = uniqueNums.map(n => createBallHTML(n)).join('');
+        document.getElementById('validator-score-badge').textContent = `Score: ${res.totalScore} / 100`;
+        
+        document.getElementById('val-sum-val').textContent = res.sum;
+        document.getElementById('val-sum-score').textContent = `${Math.round(res.sumScore)}%`;
+
+        document.getElementById('val-oddeven-val').textContent = `${res.odds}O / ${res.evens}E`;
+        document.getElementById('val-oddeven-score').textContent = `${res.oddEvenScore}%`;
+
+        document.getElementById('val-decade-val').textContent = `${res.decades} Decades`;
+        document.getElementById('val-decade-score').textContent = `${res.decadeScore}%`;
+
+        document.getElementById('val-color-val').textContent = "Balanced";
+        document.getElementById('val-color-score').textContent = `${res.colorScore}%`;
+
+        const verdictEl = document.getElementById('validator-verdict');
+        if (res.totalScore >= 80) {
+            verdictEl.innerHTML = `<strong class="text-emerald-400 block mb-1">High Win Probability Rating (${res.totalScore}%)</strong> Line falls within optimal historical parameters (Sum ${res.sum}, ${res.decades} decade spread). Highly recommended.`;
+        } else {
+            verdictEl.innerHTML = `<strong class="text-amber-400 block mb-1">Sub-optimal Combination (${res.totalScore}%)</strong> Line deviates from prime sum bounds (120-180) or lacks decade spread. Consider re-balancing.`;
+        }
+    }
+
+    function fillRandomValidatorInput() {
+        const inputs = document.querySelectorAll('.val-num');
+        const randLine = generateSingleCandidate('hybrid', 6);
+        inputs.forEach((inp, idx) => {
+            inp.value = randLine[idx];
+        });
+        validateTicketInput();
+    }
+
+    // --- HEATMAP MATRIX GRID ---
+    function renderHeatmapGrid() {
+        const matrix = document.getElementById('ball-matrix');
+        matrix.innerHTML = '';
+
+        for (let i = 1; i <= 49; i++) {
+            const prob = calculateBallProbability(i);
+            const color = getBallColor(i);
+            const isLocked = lockedNumbers.has(i);
+            const isExcluded = excludedNumbers.has(i);
+
+            const bgClass = color === 'red' ? 'ball-red' : color === 'blue' ? 'ball-blue' : 'ball-green';
+
+            const card = document.createElement('div');
+            card.className = `relative flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950 border transition-all cursor-pointer group ${
+                isLocked ? 'border-amber-500 ring-2 ring-amber-500/40' : 
+                isExcluded ? 'border-red-900/60 opacity-40 bg-red-950/10' : 
+                'border-slate-800 hover:border-slate-700'
+            }`;
+
+            card.onclick = () => handleGridBallClick(i);
+
+            card.innerHTML = `
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full ${bgClass} text-white font-extrabold flex items-center justify-center text-xs sm:text-sm shadow-md mb-1 transition-transform group-hover:scale-105">
+                    ${String(i).padStart(2, '0')}
+                </div>
+                
+                <span class="text-[10px] font-mono font-bold text-amber-400">
+                    ${prob}% Exp.
+                </span>
+
+                ${isLocked ? '<i class="fa-solid fa-lock text-amber-400 text-xs absolute top-1.5 right-1.5"></i>' : ''}
+                ${isExcluded ? '<i class="fa-solid fa-ban text-red-500 text-xs absolute top-1.5 right-1.5"></i>' : ''}
+            `;
+
+            matrix.appendChild(card);
+        }
+    }
+
+    function handleGridBallClick(num) {
+        const mode = document.querySelector('input[name="grid-mode"]:checked').value;
+
+        if (mode === 'lock') {
+            if (lockedNumbers.has(num)) lockedNumbers.delete(num);
+            else {
+                if (lockedNumbers.size >= 6) return showToast("Max 6 locks allowed", "error");
+                lockedNumbers.add(num);
+                excludedNumbers.delete(num);
+            }
+        } else {
+            if (excludedNumbers.has(num)) excludedNumbers.delete(num);
+            else {
+                excludedNumbers.add(num);
+                lockedNumbers.delete(num);
+            }
+        }
+
+        renderHeatmapGrid();
+        updateLockExcludeChips();
+    }
+
+    function clearAllGridSelections() {
+        lockedNumbers.clear();
+        excludedNumbers.clear();
+        renderHeatmapGrid();
+        updateLockExcludeChips();
+        showToast("Cleared selections.", "success");
+    }
+
+    function updateLockExcludeChips() {
+        document.getElementById('count-locked').textContent = lockedNumbers.size;
+        document.getElementById('count-excluded').textContent = excludedNumbers.size;
+
+        document.getElementById('locked-chips').innerHTML = lockedNumbers.size === 0 
+            ? '<span class="text-[10px] italic text-slate-600">None</span>'
+            : Array.from(lockedNumbers).map(n => `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold">#${n}</span>`).join('');
+
+        document.getElementById('excluded-chips').innerHTML = excludedNumbers.size === 0 
+            ? '<span class="text-[10px] italic text-slate-600">None</span>'
+            : Array.from(excludedNumbers).map(n => `<span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px] font-bold">#${n}</span>`).join('');
+    }
+
+    // --- MONTE CARLO SIMULATOR ---
+    function runMonteCarloSimulation() {
+        const drawCount = parseInt(document.getElementById('sim-draw-count').value, 10);
+        const btn = document.getElementById('btn-run-sim');
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Testing...`;
+
+        setTimeout(() => {
+            let match3 = 0, match4 = 0, match5 = 0, sumFit = 0;
+            const sampleUserLine = generateSingleCandidate('hybrid', 6);
+
+            for (let i = 0; i < drawCount; i++) {
+                const simDraw = generateSingleCandidate('random', 6);
+                const matches = simDraw.filter(n => sampleUserLine.includes(n)).length;
+
+                if (matches === 3) match3++;
+                if (matches === 4) match4++;
+                if (matches >= 5) match5++;
+
+                const sum = simDraw.reduce((a, b) => a + b, 0);
+                if (sum >= 120 && sum <= 180) sumFit++;
+            }
+
+            document.getElementById('sim-match3').textContent = `${((match3 / drawCount) * 100).toFixed(2)}%`;
+            document.getElementById('sim-match4').textContent = `${((match4 / drawCount) * 100).toFixed(2)}%`;
+            document.getElementById('sim-match5').textContent = `${((match5 / drawCount) * 100).toFixed(3)}%`;
+            document.getElementById('sim-sumfit').textContent = `${((sumFit / drawCount) * 100).toFixed(1)}%`;
+
+            renderSimChart([match3, match4, match5, sumFit], drawCount);
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-play"></i> Run Backtest`;
+            showToast(`Simulation across ${drawCount.toLocaleString()} draws complete!`, "success");
+        }, 100);
+    }
+
+    function renderSimChart(dataArr, totalDraws) {
+        const ctx = document.getElementById('chartSimResults').getContext('2d');
+        if (chartSimInstance) chartSimInstance.destroy();
+
+        chartSimInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['3-Matches', '4-Matches', '5+ Matches', '120-180 Sum Fit'],
+                datasets: [{
+                    label: 'Simulated Hit Frequency',
+                    data: dataArr,
+                    backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                }
+            }
+        });
+    }
+
+    // --- STATS ANALYTICS CHARTS ---
+    function initCharts() {
+        // 1. Sum Range Distribution Chart
+        const ctxSum = document.getElementById('chartSumDist').getContext('2d');
+        if (chartSumDistInstance) chartSumDistInstance.destroy();
+
+        chartSumDistInstance = new Chart(ctxSum, {
+            type: 'line',
+            data: {
+                labels: ['60-90', '91-119', '120-140', '141-160', '161-180', '181-200', '201+'],
+                datasets: [{
+                    label: 'Historical HKJC Draw Frequency (%)',
+                    data: [4, 12, 28, 34, 18, 9, 3],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#cbd5e1' } } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                }
+            }
+        });
+    }
+
+    function renderPairRankings() {
+        const listEl = document.getElementById('pair-ranking-list');
+        listEl.innerHTML = TOP_PAIRS.map(item => `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="flex items-center space-x-2">
+                    <div class="w-6 h-6 rounded-full ball-${getBallColor(item.pair[0])} text-white font-bold text-[10px] flex items-center justify-center">${item.pair[0]}</div>
+                    <span class="text-xs text-slate-400">&</span>
+                    <div class="w-6 h-6 rounded-full ball-${getBallColor(item.pair[1])} text-white font-bold text-[10px] flex items-center justify-center">${item.pair[1]}</div>
+                </div>
+                <span class="text-xs font-bold text-emerald-400">${item.hits} Co-Draws</span>
+            </div>
+        `).join('');
+    }
+
+    function updateTopSummary() {
+        const overdueNum = Object.entries(BASE_LAPSE_DATA).sort((a,b) => b[1] - a[1])[0];
+        document.getElementById('stat-top-overdue').innerHTML = `
+            <span class="w-4 h-4 rounded-full ball-${getBallColor(overdueNum[0])} text-white text-[9px] font-bold flex items-center justify-center">${overdueNum[0]}</span>
+            <span>No. ${overdueNum[0]} (${overdueNum[1]} draws)</span>
+        `;
+    }
+
+    function updateSliderLabels() {
+        document.getElementById('slider-val-lapse').textContent = `${document.getElementById('slider-lapse').value}%`;
+        document.getElementById('slider-val-freq').textContent = `${document.getElementById('slider-freq').value}%`;
+        document.getElementById('slider-val-pairs').textContent = `${document.getElementById('slider-pairs').value}%`;
+        renderHeatmapGrid();
+    }
+
+    function copyGeneratedLines() {
+        if (generatedTickets.length === 0) return;
+        const text = generatedTickets.map((l, i) => `Line ${i + 1}: ${l.map(n => String(n).padStart(2, '0')).join(', ')}`).join('\n');
+        navigator.clipboard ? navigator.clipboard.writeText(text) : alert(text);
+        showToast("Copied tickets to clipboard!", "success");
+    }
+
+    function exportTicketsJSON() {
+        if (generatedTickets.length === 0) return;
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generatedTickets, null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", "hkjc_marksix_optimized_tickets.json");
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        dlAnchor.remove();
+    }
+
+    function clearGeneratedLines() {
+        generatedTickets = [];
+        document.getElementById('tickets-container').innerHTML = `
+            <div class="h-72 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-800 rounded-2xl">
+                <div class="w-12 h-12 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center text-xl mb-3">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h3 class="text-sm font-semibold text-slate-300">Statistical Engine Ready</h3>
+                <p class="text-xs text-slate-500 max-w-xs mt-1">Select an optimization strategy and click "Generate Optimized Ticket" to calculate probability scores.</p>
+            </div>
+        `;
+    }
+
+    function openScraperModal() { document.getElementById('scraper-modal').classList.remove('hidden'); }
+    function closeScraperModal() { document.getElementById('scraper-modal').classList.add('hidden'); }
+
+    function showToast(msg, type = "success") {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-msg').textContent = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+    }
+</script>
